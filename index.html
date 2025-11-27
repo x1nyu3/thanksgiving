@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thankful Letters</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Poppins:wght@300;400;500&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #a08368);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 100vw;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        /* Landing Page Styles */
+        .landing-page {
+            text-align: center;
+            color: #4a3429;
+        }
+        
+        .title {
+            font-family: 'Kalam', cursive;
+            font-size: min(16rem, 25vw);
+            font-weight: 550;
+            text-align: center;
+            color: rgba(175, 144, 115, 0.8);
+            white-space: nowrap;
+            width: 100%;
+            overflow: visible;
+        }
+        
+        .envelope {
+            width: 480px;
+            height: 336px;
+            margin: -200px auto 3rem;
+            position: relative;
+            background-image: url('envelope before.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .envelope:hover {
+            transform: rotate(4deg);
+        }
+
+        .envelope-hover {
+            cursor: pointer;
+            transform: rotate(8deg);
+        }
+        
+        .envelope::before {
+            display: none;
+        }
+        
+        .envelope::after {
+            display: none;
+        }
+        
+        .envelope-flap {
+            display: none;
+        }
+
+        .passcode-label {
+            font-size: 1.5rem;
+            font-family: 'Courier New', monospace;
+            color: #EEDFD0;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        
+        .input-container {
+            position: relative;
+            margin-top: 20px;
+        }
+        
+        .passcode-input {
+            width: 60%;
+            padding: 20px 70px 20px 20px;
+            font-size: 1.5rem;
+            font-family: 'Courier New', monospace;
+            color: #EEDFD0;
+            border-radius: 20px;
+            background: #BD9F82;
+            border: none;
+            outline: none;
+            text-align: center;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .passcode-input:focus {
+            outline: none;
+            border: none;
+            box-shadow: none;
+        }
+        
+        .submit-btn {           
+            position: absolute;
+            right: 230px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 30px;
+            background-image: url('arrow.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 50%;
+        }
+
+        .error-message {
+            color: #EEDFD0;
+            font-size: 0.9rem;
+            font-family: 'Courier New', monospace;
+            margin-top: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .error-message.show {
+            opacity: 1;
+        }
+        
+        /* Letter Page Styles */
+        .letter-page {
+            display: none;
+            position: relative;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 5px;
+            background-image: url('arrow.png');
+            background-size: 60%;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform: rotate(180deg);
+        }
+        
+        .back-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: rotate(180deg) scale(1.1);
+        }
+        
+        .letter-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 2rem;
+            color: #4a3429;
+        }
+        
+        .letter-icon {
+            width: 40px;
+            height: 30px;
+            position: absolute;
+            top: 25px;
+            left: 60px;
+            background-image: url('envelope after.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        .letter-icon::before {
+            display: none;
+        }
+        
+        .letter-icon::after {
+            display: none;
+        }
+        
+        .letter-to {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        
+        .letter-content {
+            background: #EEDFD0;
+            padding: 2rem;
+            border-radius: 12px;
+            min-height: 400px;
+            position: relative;
+            top: 100px;
+            width: 600px;
+            margin: -50px auto;
+            box-sizing: border-box;
+            transform: rotate(1.5deg);
+        }
+        
+        .letter-text {
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #4a3429;
+            white-space: pre-line;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        .letter-placeholder {
+            color: #8b6f47;
+            font-style: italic;
+            text-align: center;
+            padding: 2rem;
+            border: 2px dashed #8b6f47;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .title {
+                font-size: 3rem;
+            }
+            
+            .envelope {
+                width: 160px;
+                height: 112px;
+            }
+            
+            .passcode-section {
+                padding: 1.5rem;
+            }
+            
+            .letter-content {
+                padding: 1.5rem;
+                min-height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Landing Page -->
+        <div id="landingPage" class="landing-page">
+            <h1 class="title">Thankful.</h1>
+            
+            <div class="envelope"></div>
+            
+            <label class="passcode-label">Enter passcode:</label>
+
+            <div class="passcode-section">
+                <div class="input-container">
+                    <input 
+                        type="text" 
+                        id="passcodeInput" 
+                        class="passcode-input" 
+                        placeholder=""
+                        maxlength="20"
+                    >
+                    <button id="submitBtn" class="submit-btn"></button>
+                </div>
+                <div id="errorMessage" class="error-message">
+                    Invalid passcode. Ask Xin.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Letter Page -->
+        <div id="letterPage" class="letter-page">
+            <button id="backBtn" class="back-btn"></button>
+            
+            <div class="letter-header">
+                <div class="letter-icon"></div>
+                <div class="letter-to"> <span id="recipientName"></span></div>
+            </div>
+            
+            <div class="letter-content">
+                <div id="letterText" class="letter-text">
+                    <div class="letter-placeholder">
+                        Letter starts here
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Passcode to letter content mapping
+        const letters = {
+            'riyachargers': {
+                content: `Dear Riya, 
+
+It was almost a year ago now when I started thinking about coming back to USC. I remember Aryan told me people were already signing houses (Alex) and I panicked, so the two months after that were super tumultuous, constantly flicking between choosing USC or Bocconi. I was still peak indecision when Will told me about his Hawaii hot tub tale and then I remember calling my dad like this is SUCH a deal and that I’d have to decide ASAP. We couldn’t get critical mass to sign on so then that was when we and Jenny started looking. At the time, I was living with Isabelle and I told her I had faith in living with you and that I’d be really glad for an opportunity to get to know you better. 
+
+I was right! I knew I had a good hunch that we’d get along. At first, I appreciated our conversations, I told you that I enjoy your verbal eccentricities. But now that I’ve gotten to know you more, I most of all appreciate your thoughtfulness when it comes to both yourself and how you treat others. I think you operate with a lot of self-respect through principles that you set for yourself that I’ve learned from. I also see how you treat other people with a lot of thought, just from the way you talk about your friends from home and in WBB. I feel like you would always have a reason for doing something and have control over your life without letting the whimsies of everyday take ahold of you. 
+
+I recently told Isabelle that in this new life at USC I can probably count on you the most. And for that I am super grateful. I’m not the best at giving or like showing that I want to give, but I hope that you feel like you can count on me as well. 
+
+Merry thanksgiving, 
+
+Xin
+
+`
+            },
+            'abc123': {
+                content: `Dear Sarah,
+
+Happy Thanksgiving! I wanted to take this opportunity to express my heartfelt gratitude for your friendship.
+
+Your constant support and encouragement have been a source of strength for me throughout this year. Thank you for always being there when I needed someone to talk to.
+
+I'm grateful for all the laughter we've shared and all the memories we've created together. You truly are a blessing in my life.
+
+Wishing you and your family a wonderful Thanksgiving filled with love, joy, and delicious food!
+
+With appreciation,
+
+Your Friend`
+            },
+            'turkey2024': {
+                content: `Dear Mom,
+
+On this Thanksgiving day, I want to express my deepest gratitude for everything you've done for me.
+
+Your unconditional love, endless patience, and wise guidance have shaped me into who I am today. Thank you for all the sacrifices you've made and for always believing in me.
+
+I'm so grateful for the wonderful traditions you've created for our family and for the way you make every holiday special.
+
+Thank you for being the most amazing mother anyone could ask for.
+
+With all my love,
+
+Your Child`
+            }
+        };
+
+        // DOM elements
+        const landingPage = document.getElementById('landingPage');
+        const letterPage = document.getElementById('letterPage');
+        const passcodeInput = document.getElementById('passcodeInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const backBtn = document.getElementById('backBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const recipientName = document.getElementById('recipientName');
+        const letterText = document.getElementById('letterText');
+
+        // Event listeners
+        submitBtn.addEventListener('click', handleSubmit);
+        passcodeInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleSubmit();
+            }
+        });
+        backBtn.addEventListener('click', showLandingPage);
+
+        // Functions
+        function handleSubmit() {
+            const passcode = passcodeInput.value.trim();
+            
+            if (letters[passcode]) {
+                showLetter(letters[passcode]);
+            } else {
+                showError();
+            }
+        }
+
+        function showLetter(letterData) {
+            // Hide error message
+            errorMessage.classList.remove('show');
+            
+            // Update letter content
+            recipientName.textContent = letterData.recipient;
+            letterText.innerHTML = `<div class="letter-text">${letterData.content}</div>`;
+            
+            // Animate transition
+            landingPage.classList.add('fade-out');
+            
+            setTimeout(() => {
+                landingPage.style.display = 'none';
+                letterPage.style.display = 'block';
+                letterPage.classList.add('fade-in');
+            }, 300);
+        }
+
+        function showLandingPage() {
+            // Reset form
+            passcodeInput.value = '';
+            errorMessage.classList.remove('show');
+            
+            // Animate transition
+            letterPage.classList.add('fade-out');
+            letterPage.classList.remove('fade-in');
+            
+            setTimeout(() => {
+                letterPage.style.display = 'none';
+                landingPage.style.display = 'block';
+                landingPage.classList.remove('fade-out');
+                landingPage.classList.add('fade-in');
+            }, 300);
+        }
+
+        function showError() {
+            errorMessage.classList.add('show');
+            passcodeInput.style.borderColor = '#d2691e';
+            
+            // Reset border color after 2 seconds
+            setTimeout(() => {
+                passcodeInput.style.borderColor = '#4a3429';
+            }, 2000);
+        }
+
+        // Initial focus on passcode input
+        passcodeInput.focus();
+    </script>
+</body>
+</html>
